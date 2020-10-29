@@ -56,6 +56,9 @@
 .keyboard__key--wide {
   width: 12%;
 }
+.keyboard__key--advwide {
+  width: 18%;
+}
 
 .keyboard__key--extra-wide {
   width: 36%;
@@ -63,7 +66,7 @@
 }
 
 .keyboard__key--activatable::after {
-  content: '';
+  content: "";
   top: 10px;
   right: 10px;
   position: absolute;
