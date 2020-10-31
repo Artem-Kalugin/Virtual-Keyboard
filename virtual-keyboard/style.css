@@ -47,10 +47,12 @@
   padding: 0;
   -webkit-tap-highlight-color: transparent;
   position: relative;
+  box-shadow: 8px 9px 15px -4px rgba(0, 0, 0, 0.44);
+  transition: all 0.05s ease-in-out;
 }
-
-.keyboard__key:active {
-  background: rgba(255, 255, 255, 0.12);
+.keyboard__key__active {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: none;
 }
 
 .keyboard__key--wide {

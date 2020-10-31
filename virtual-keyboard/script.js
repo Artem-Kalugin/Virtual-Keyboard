@@ -2,7 +2,33 @@ const Keyboard = {
   elements: {
     main: null,
     keysContainer: null,
-    keys: []
+    keys: [],
+    audioContainer: [
+      Key0 = new Audio('assets/sounds/Key0.mp3'),
+      Key1 = new Audio('assets/sounds/Key1.mp3'),
+      Key2 = new Audio('assets/sounds/Key2.mp3'),
+      Key3 = new Audio('assets/sounds/Key3.mp3'),
+      Key4 = new Audio('assets/sounds/Key4.mp3'),
+      Key5 = new Audio('assets/sounds/Key5.mp3'),
+      Key0Ru = new Audio('assets/sounds/Key0Ru.mp3'),
+      Key1Ru = new Audio('assets/sounds/Key1Ru.mp3'),
+      Key2Ru = new Audio('assets/sounds/Key2Ru.mp3'),
+      Key3Ru = new Audio('assets/sounds/Key3Ru.mp3'),
+      Key4Ru = new Audio('assets/sounds/Key4Ru.mp3'),
+      Key5Ru = new Audio('assets/sounds/Key5Ru.mp3'),
+      Spec0 = new Audio('assets/sounds/Spec.mp3'),
+      Spec1 = new Audio('assets/sounds/Spec.mp3'),
+      Spec2 = new Audio('assets/sounds/Spec.mp3'),
+      Spec3 = new Audio('assets/sounds/Spec.mp3'),
+      Spec4 = new Audio('assets/sounds/Spec4.mp3'),
+      Spec0Ru = new Audio('assets/sounds/Spec0Ru.mp3'),
+      Spec1Ru = new Audio('assets/sounds/Spec1Ru.mp3'),
+      Spec2Ru = new Audio('assets/sounds/Spec2Ru.mp3'),
+      Spec3Ru = new Audio('assets/sounds/Spec3Ru.mp3'),
+      Spec4Ru = new Audio('assets/sounds/Spec4Ru.mp3'),
+      
+      
+    ]
   },
   shiftSwitcher: {
     "1" : "!",
@@ -62,11 +88,12 @@ const Keyboard = {
 
   properties: {
     value: "",
-    cursorPos: "",
+    secondValue: "",
     capsLock: false,
     shift: false,
-    langRu : false
-
+    langRu : false,
+    sound: true,
+    cursorPos : 0
   },
 
   init() {
@@ -88,11 +115,23 @@ const Keyboard = {
     // Automatically use keyboard for elements with .use-keyboard-input
     document.querySelectorAll(".use-keyboard-input").forEach(element => {
       element.addEventListener("focus", () => {
-        this.open(element.value, currentValue => {
-          element.value = currentValue;
+        this.open(this.properties.value, currentValue => {
+          element.selectionStart = element.selectionEnd = this.properties.cursorPos;
+          let container = (this.properties.value+this.properties.secondValue).slice(this.properties.cursorPos);
+          this.properties.value = (this.properties.value+this.properties.secondValue).slice(0,(this.properties.cursorPos));
+          this.properties.secondValue = container; 
+          element.value = this.properties.value+this.properties.secondValue;
           element.focus();
+          element.selectionStart = element.selectionEnd = this.properties.cursorPos;
         });
       });
+      element.addEventListener("click", () => {
+        this.properties.cursorPos=element.selectionStart;
+        element.selectionStart = element.selectionEnd = this.properties.cursorPos;
+        let container = (this.properties.value+this.properties.secondValue).slice(this.properties.cursorPos);
+        this.properties.value = (this.properties.value+this.properties.secondValue).slice(0,(this.properties.cursorPos));
+        this.properties.secondValue = container; 
+      })
     });
   },
   _toggleChangeLang(){
@@ -145,21 +184,25 @@ const Keyboard = {
         case "backspace":
           keyElement.classList.add("keyboard__key--wide");
           keyElement.innerHTML = createIconHTML("backspace");
-
           keyElement.addEventListener("click", () => {
+            if (this.properties.cursorPos > 0) this.properties.cursorPos--;
             this.properties.value = this.properties.value.substring(0, this.properties.value.length - 1);
+            if (this.properties.sound) this.elements.audioContainer[11 + (this.properties.langRu?5:0)].play();     
             this._triggerEvent("oninput");
+            keyElement.classList.toggle("keyboard__key__active");
+            setTimeout(() => {keyElement.classList.toggle("keyboard__key__active")}, 240);
           });
-
           break;
 
         case "caps":
           keyElement.classList.add("keyboard__key--wide", "keyboard__key--activatable");
           keyElement.innerHTML = createIconHTML("keyboard_capslock");
-
           keyElement.addEventListener("click", () => {
             this._toggleCapsLock();
+            if (this.properties.sound) this.elements.audioContainer[14 + (this.properties.langRu?5:0)].play();     
+            keyElement.classList.toggle("keyboard__key__active");
             keyElement.classList.toggle("keyboard__key--active");
+            setTimeout(() => {keyElement.classList.toggle("keyboard__key__active")}, 240);
           });
 
           break;
@@ -168,8 +211,12 @@ const Keyboard = {
           keyElement.classList.add("keyboard__key--wide");
           keyElement.innerHTML = createIconHTML("keyboard_return");
           keyElement.addEventListener("click", () => {
+            this.properties.cursorPos++;
             this.properties.value += "\n";
             this._triggerEvent("oninput");
+            if (this.properties.sound) this.elements.audioContainer[13 + (this.properties.langRu?5:0)].play();     
+            keyElement.classList.toggle("keyboard__key__active");
+            setTimeout(() => {keyElement.classList.toggle("keyboard__key__active")}, 240);
           });
           break;
         case "RU":
@@ -177,39 +224,58 @@ const Keyboard = {
             keyElement.textContent = key;
             keyElement.addEventListener("click", () => {
               this._toggleChangeLang();
+              keyElement.classList.toggle("keyboard__key__active");
+              if (this.properties.sound) this.elements.audioContainer[Math.floor(Math.random()*6)+(this.properties.langRu?5:0)].play();     
+              setTimeout(120, keyElement.classList.toggle("keyboard__key__active"));
             });
+            if (this.properties.sound) this.elements.audioContainer[12 + (this.properties.langRu?5:0)].play();     
+        
             break;
         case "EN":
               keyElement.classList.add("keyboard__key");
               keyElement.textContent = key;
               keyElement.addEventListener("click", () => {
                 this._toggleChangeLang();
+                keyElement.classList.toggle("keyboard__key__active");
+                if (this.properties.sound) this.elements.audioContainer[Math.floor(Math.random()*6)+(this.properties.langRu?5:0)].play();     
+                setTimeout(() => {keyElement.classList.toggle("keyboard__key__active")}, 240);
               });
+              if (this.properties.sound) this.elements.audioContainer[12 + (this.properties.langRu?5:0)].play();     
+        
               break;
         case "nav-bef":
             keyElement.classList.add("keyboard__key--wide");
             keyElement.innerHTML = createIconHTML("navigate_before");
             keyElement.addEventListener("click", () => {
-              this.properties.cursorPos--;
+              if (this.properties.cursorPos > 0) this.properties.cursorPos--;
               this._triggerEvent("oninput");
+              keyElement.classList.toggle("keyboard__key__active");
+              if (this.properties.sound) this.elements.audioContainer[Math.floor(Math.random()*6)+(this.properties.langRu?5:0)].play();     
+              setTimeout(() => {keyElement.classList.toggle("keyboard__key__active")}, 240);
             });
             break;  
         case "nav-aft":
               keyElement.classList.add("keyboard__key--wide");
               keyElement.innerHTML = createIconHTML("navigate_next");
               keyElement.addEventListener("click", () => {
-                this.properties.cursorPos++;
+                if (this.properties.cursorPos < (this.properties.value+this.properties.secondValue).length) this.properties.cursorPos++;
                 this._triggerEvent("oninput");
+                if (this.properties.sound) this.elements.audioContainer[Math.floor(Math.random()*6)+(this.properties.langRu?5:0)].play();     
+                keyElement.classList.toggle("keyboard__key__active");
+                setTimeout(() => {keyElement.classList.toggle("keyboard__key__active")}, 240);
               });
               break;  
 
         case "space":
           keyElement.classList.add("keyboard__key--extra-wide");
           keyElement.innerHTML = createIconHTML("space_bar");
-
           keyElement.addEventListener("click", () => {
+            this.properties.cursorPos++;
             this.properties.value += " ";
             this._triggerEvent("oninput");
+            if (this.properties.sound) this.elements.audioContainer[Math.floor(Math.random()*6)+(this.properties.langRu?5:0)].play();     
+            keyElement.classList.toggle("keyboard__key__active");
+            setTimeout(() => {keyElement.classList.toggle("keyboard__key__active")}, 240);
           });
 
           break;
@@ -220,24 +286,28 @@ const Keyboard = {
           keyElement.addEventListener("click", () => {
             this._toggleCapsLock();
             this._toggleShift();
+            if (this.properties.sound) this.elements.audioContainer[10 + (this.properties.langRu?5:0)].play();     
             keyElement.classList.toggle("keyboard__key--active");
+            keyElement.classList.toggle("keyboard__key__active");
+            setTimeout(() => {keyElement.classList.toggle("keyboard__key__active")}, 240);
           });
 
           break;
 
         default:
           keyElement.textContent = key.toLowerCase();
-
           keyElement.addEventListener("click", () => {
+            this.properties.cursorPos++;
             this.properties.value += keyElement.innerText;
             this._triggerEvent("oninput");
+            if (this.properties.sound) this.elements.audioContainer[Math.floor(Math.random()*6)+(this.properties.langRu?5:0)].play();     
+            keyElement.classList.toggle("keyboard__key__active");
+            setTimeout(() => {keyElement.classList.toggle("keyboard__key__active")}, 240);
           });
 
           break;
       }
-
       fragment.appendChild(keyElement);
-
       if (insertLineBreak) {
         fragment.appendChild(document.createElement("br"));
       }
@@ -290,7 +360,48 @@ const Keyboard = {
     this.elements.main.classList.add("keyboard--hidden");
   }
 };
-
+document.querySelector(".use-keyboard-input").onkeydown  =
+document.querySelector(".use-keyboard-input").onkeypress = handle;
+function handle(e) {
+  let event = new Event("click");
+  e.preventDefault();
+  document.querySelectorAll(".keyboard__key").forEach(element => { 
+    if (element.innerText==e.key) {
+      element.dispatchEvent(event);
+    }
+    if (e.key=="Enter" && element.outerText=="keyboard_return"){
+      element.dispatchEvent(event);
+    }
+    if (e.key=="CapsLock" && element.outerText=="keyboard_capslock"){
+      element.dispatchEvent(event);
+    }
+    if (e.key=="Backspace" && element.outerText=="backspace"){
+      element.dispatchEvent(event);
+    }
+    if (e.key==" " && element.outerText=="space_bar"){
+      element.dispatchEvent(event);
+    }
+    if (e.key=="ArrowRight" && element.outerText=="navigate_next"){
+      element.dispatchEvent(event);
+    }
+    if (e.key=="ArrowLeft" && element.outerText=="navigate_before"){
+      element.dispatchEvent(event);
+    }
+    if ((e.ctrlKey && e.altKey) && (element.innerText=="RU" || element.innerText=="EN")){
+      element.dispatchEvent(event);
+    }
+  })
+}
+document.querySelector(".use-keyboard-input").onkeyup  = handleUP;
+function handleUP(e) {
+  let event = new Event("click");
+  e.preventDefault();
+  document.querySelectorAll(".keyboard__key").forEach(element => { 
+    if (e.key=="CapsLock" && element.outerText=="keyboard_capslock"){
+      element.dispatchEvent(event);
+    }
+  })
+}
 window.addEventListener("DOMContentLoaded", function () {
   Keyboard.init();
 });
