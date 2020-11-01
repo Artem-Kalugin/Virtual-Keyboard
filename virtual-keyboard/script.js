@@ -2,30 +2,31 @@ const Keyboard = {
   elements: {
     main: null,
     keysContainer: null,
+    controlPanel: null,
     keys: [],
     audioContainer: [
-      Key0 = new Audio('assets/sounds/Key0.mp3'),
-      Key1 = new Audio('assets/sounds/Key1.mp3'),
-      Key2 = new Audio('assets/sounds/Key2.mp3'),
-      Key3 = new Audio('assets/sounds/Key3.mp3'),
-      Key4 = new Audio('assets/sounds/Key4.mp3'),
-      Key5 = new Audio('assets/sounds/Key5.mp3'),
-      Key0Ru = new Audio('assets/sounds/Key0Ru.mp3'),
-      Key1Ru = new Audio('assets/sounds/Key1Ru.mp3'),
-      Key2Ru = new Audio('assets/sounds/Key2Ru.mp3'),
-      Key3Ru = new Audio('assets/sounds/Key3Ru.mp3'),
-      Key4Ru = new Audio('assets/sounds/Key4Ru.mp3'),
-      Key5Ru = new Audio('assets/sounds/Key5Ru.mp3'),
-      Spec0 = new Audio('assets/sounds/Spec.mp3'),
-      Spec1 = new Audio('assets/sounds/Spec.mp3'),
-      Spec2 = new Audio('assets/sounds/Spec.mp3'),
-      Spec3 = new Audio('assets/sounds/Spec.mp3'),
-      Spec4 = new Audio('assets/sounds/Spec4.mp3'),
-      Spec0Ru = new Audio('assets/sounds/Spec0Ru.mp3'),
-      Spec1Ru = new Audio('assets/sounds/Spec1Ru.mp3'),
-      Spec2Ru = new Audio('assets/sounds/Spec2Ru.mp3'),
-      Spec3Ru = new Audio('assets/sounds/Spec3Ru.mp3'),
-      Spec4Ru = new Audio('assets/sounds/Spec4Ru.mp3'),
+      Key0 = new Audio('assets/sounds/0.mp3'),
+      Key1 = new Audio('assets/sounds/1.mp3'),
+      Key2 = new Audio('assets/sounds/2.mp3'),
+      Key3 = new Audio('assets/sounds/3.mp3'),
+      Key4 = new Audio('assets/sounds/4.mp3'),
+      Key5 = new Audio('assets/sounds/5.mp3'),
+      Key0Ru = new Audio('assets/sounds/6.mp3'),
+      Key1Ru = new Audio('assets/sounds/7.mp3'),
+      Key2Ru = new Audio('assets/sounds/8.mp3'),
+      Key3Ru = new Audio('assets/sounds/9.mp3'),
+      Key4Ru = new Audio('assets/sounds/10.mp3'),
+      Key5Ru = new Audio('assets/sounds/11.mp3'),
+      Spec0 = new Audio('assets/sounds/12.mp3'),
+      Spec1 = new Audio('assets/sounds/13.mp3'),
+      Spec2 = new Audio('assets/sounds/14.mp3'),
+      Spec3 = new Audio('assets/sounds/15.mp3'),
+      Spec4 = new Audio('assets/sounds/16.mp3'),
+      Spec0Ru = new Audio('assets/sounds/17.mp3'),
+      Spec1Ru = new Audio('assets/sounds/18.mp3'),
+      Spec2Ru = new Audio('assets/sounds/19.mp3'),
+      Spec3Ru = new Audio('assets/sounds/20.mp3'),
+      Spec4Ru = new Audio('assets/sounds/21.mp3'),
       
       
     ]
@@ -80,6 +81,7 @@ const Keyboard = {
     "(" : "9",
     ")" : "0",
     "." : ",",
+    "," : "."
   },
   eventHandlers: {
     oninput: null,
@@ -100,17 +102,42 @@ const Keyboard = {
     // Create main elements
     this.elements.main = document.createElement("div");
     this.elements.keysContainer = document.createElement("div");
-
+    this.elements.controlPanel = document.querySelector(".keyboard-cp");
     // Setup main elements
     this.elements.main.classList.add("keyboard", "keyboard--hidden");
     this.elements.keysContainer.classList.add("keyboard__keys");
     this.elements.keysContainer.appendChild(this._createKeys());
-
     this.elements.keys = this.elements.keysContainer.querySelectorAll(".keyboard__key");
-     
     // Add to DOM
+    this.elements.main.appendChild(this.elements.controlPanel);
     this.elements.main.appendChild(this.elements.keysContainer);
     document.body.appendChild(this.elements.main);
+    soundControl = this.elements.controlPanel.querySelector(".sounds-controll");
+    soundControl.addEventListener("click", ()=>{
+      this.properties.sound = !this.properties.sound;
+      soundControl.classList.toggle("keyboard-cp__element__active");
+    });
+    hideControl = this.elements.controlPanel.querySelector(".hide");
+    hideControl.addEventListener("click", ()=>{
+      this.close();
+    });
+    speechRecognitionControl = this.elements.controlPanel.querySelector(".speech-recog");
+    speechRecognitionControl.addEventListener("click", ()=>{
+      speechRecognitionControl.classList.toggle("keyboard-cp__element__active");
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      var recognition = new SpeechRecognition();
+      recognition.lang = 'ru-RU';
+      recognition.start();
+      recognition.onresult = function(event) {
+      if (event.results.length > 0) {
+      let recognishedText = event.results[0][0].transcript;
+      Keyboard.properties.value += recognishedText;
+      Keyboard.properties.cursorPos = Keyboard.properties.value.length;
+      speechRecognitionControl.classList.toggle("keyboard-cp__element__active");
+      Keyboard._triggerEvent("oninput");
+      }
+      };
+    });
 
     // Automatically use keyboard for elements with .use-keyboard-input
     document.querySelectorAll(".use-keyboard-input").forEach(element => {
@@ -187,7 +214,7 @@ const Keyboard = {
           keyElement.addEventListener("click", () => {
             if (this.properties.cursorPos > 0) this.properties.cursorPos--;
             this.properties.value = this.properties.value.substring(0, this.properties.value.length - 1);
-            if (this.properties.sound) this.elements.audioContainer[11 + (this.properties.langRu?5:0)].play();     
+            if (this.properties.sound) this.elements.audioContainer[15 + (this.properties.langRu?5:0)].play();     
             this._triggerEvent("oninput");
             keyElement.classList.toggle("keyboard__key__active");
             setTimeout(() => {keyElement.classList.toggle("keyboard__key__active")}, 240);
@@ -198,15 +225,13 @@ const Keyboard = {
           keyElement.classList.add("keyboard__key--wide", "keyboard__key--activatable");
           keyElement.innerHTML = createIconHTML("keyboard_capslock");
           keyElement.addEventListener("click", () => {
-            this._toggleCapsLock();
-            if (this.properties.sound) this.elements.audioContainer[14 + (this.properties.langRu?5:0)].play();     
+            if (this.properties.sound) this.elements.audioContainer[14+(this.properties.langRu?5:0)].play();     
+               this._toggleCapsLock();   
             keyElement.classList.toggle("keyboard__key__active");
             keyElement.classList.toggle("keyboard__key--active");
             setTimeout(() => {keyElement.classList.toggle("keyboard__key__active")}, 240);
           });
-
           break;
-
         case "enter":
           keyElement.classList.add("keyboard__key--wide");
           keyElement.innerHTML = createIconHTML("keyboard_return");
@@ -214,8 +239,8 @@ const Keyboard = {
             this.properties.cursorPos++;
             this.properties.value += "\n";
             this._triggerEvent("oninput");
-            if (this.properties.sound) this.elements.audioContainer[13 + (this.properties.langRu?5:0)].play();     
-            keyElement.classList.toggle("keyboard__key__active");
+            if (this.properties.sound) this.elements.audioContainer[13+(this.properties.langRu?5:0)].play();     
+               keyElement.classList.toggle("keyboard__key__active");
             setTimeout(() => {keyElement.classList.toggle("keyboard__key__active")}, 240);
           });
           break;
@@ -286,7 +311,7 @@ const Keyboard = {
           keyElement.addEventListener("click", () => {
             this._toggleCapsLock();
             this._toggleShift();
-            if (this.properties.sound) this.elements.audioContainer[10 + (this.properties.langRu?5:0)].play();     
+            if (this.properties.sound) this.elements.audioContainer[11 + (this.properties.langRu?5:0)].play();     
             keyElement.classList.toggle("keyboard__key--active");
             keyElement.classList.toggle("keyboard__key__active");
             setTimeout(() => {keyElement.classList.toggle("keyboard__key__active")}, 240);
@@ -324,7 +349,6 @@ const Keyboard = {
 
   _toggleCapsLock() {
     this.properties.capsLock = !this.properties.capsLock;
-
     for (const key of this.elements.keys) {
       if (key.textContent.length == 1) {
         key.textContent = this.properties.capsLock ? key.textContent.toUpperCase() : key.textContent.toLowerCase();

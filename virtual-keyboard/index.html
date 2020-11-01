@@ -10,5 +10,22 @@
 <body>
   <textarea class="use-keyboard-input" placeholder="Click here"></textarea>
   <script src="script.js"></script>
+  <div class="keyboard-cp">
+    <div class="keyboard-cp__element speech-recog">
+      <i class="material-icons" title="Start Speech Recognition">mic_none</i>
+    </div>
+    <div class="keyboard-cp__element sounds-controll">
+      <i class="material-icons" title="On/Off volume">volume_up</i>
+    </div>
+    <div class="keyboard-cp__element hide">
+      <i class="material-icons" title="Hide keyboard">keyboard_arrow_down</i>
+    </div>
+  </div>
+  <p>
+    В клавиатуре реализован весь требуемый функционал.
+    Заметьте, что подсветка клавиш виртуальной клавиатуры работает только тогда, когда состояние
+    обеих клавиатур совпадает (Язык, регистр). Распознавание речи работает, если проговаривать слова
+    четко и без шумов на заднем плане. Распознается русская речь. Смена языка происходит при нажатии ctrl+alt.
+  </p>
 </body>
 </html>
