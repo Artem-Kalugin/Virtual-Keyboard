@@ -126,7 +126,7 @@ const Keyboard = {
       speechRecognitionControl.classList.toggle("keyboard-cp__element__active");
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       var recognition = new SpeechRecognition();
-      recognition.lang = 'ru-RU';
+      recognition.lang = Keyboard.properties.langRu?"ru-RU":"en-US";
       recognition.start();
       recognition.onresult = function(event) {
       if (event.results.length > 0) {
